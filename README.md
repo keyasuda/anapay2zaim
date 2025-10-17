@@ -24,6 +24,16 @@
    - メールアカウントの認証情報
    - Zaim APIの認証情報
 
+5. Zaim APIのOAuth認証トークンを取得します：
+   ```bash
+   ruby auth/token_acquirer.rb
+   ```
+
+6. Zaimのジャンル情報を取得します：
+   ```bash
+   ruby auth/genre_retriever.rb
+   ```
+
 ## 使い方
 
 ```bash
@@ -33,5 +43,10 @@ ruby app.rb
 ## 構成
 
 - `lib/email_fetcher.rb`: メール取得のロジック
+- `lib/zaim_api_client.rb`: Zaim APIとの通信ロジック
+- `auth/token_acquirer.rb`: Zaim OAuthトークン取得スクリプト
+- `auth/genre_retriever.rb`: Zaimジャンル情報取得スクリプト
 - `app.rb`: メインアプリケーション
 - `.env`: 環境変数（git管理外）
+- `zaim_tokens.json`: Zaimアクセストークン（git管理外）
+- `zaim_genres.json`: Zaimジャンル情報（git管理外）

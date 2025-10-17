@@ -1,26 +1,19 @@
-require_relative 'lib/email_fetcher'
+require_relative 'lib/anapay_to_zaim'
 require 'date'
 
-# Main application to fetch ANA Pay emails and process them
+# Main application to fetch ANA Pay emails and register them to Zaim
 def main
-  puts "Starting ANAPay2Zaim email fetching process..."
+  puts "Starting ANAPay2Zaim email fetching and registration process..."
   
-  fetcher = EmailFetcher.new
-  emails = fetcher.fetch_ana_pay_emails(since_date: Date.today - 7)
+  processor = ANAPayToZaim.new
+  results = processor.process_emails(since_date: Date.today - 7)
   
-  puts "Found #{emails.length} ANA Pay emails from the last 7 days"
+  puts "\nProcessing Summary:"
+  puts "Processed: #{results[:processed]} emails"
+  puts "Registered: #{results[:registered]} transactions"
+  puts "Errors: #{results[:errors]} transactions"
   
-  emails.each do |email|
-    puts "Processing email: #{email[:subject]}"
-    puts "Date: #{email[:date]}"
-    puts "Message ID: #{email[:message_id]}"
-    puts "Amount: #{email[:body][:amount]}"
-    puts "Merchant: #{email[:body][:merchant]}"
-    puts "Transaction Date: #{email[:body][:date]}"
-    puts "-" * 50
-  end
-  
-  puts "Email fetching process completed."
+  puts "Email fetching and registration process completed."
 rescue => e
   puts "Error occurred: #{e.message}"
   puts e.backtrace

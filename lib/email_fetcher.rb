@@ -167,11 +167,11 @@ class EmailFetcher
 
   def extract_merchant(body_text)
     # Look for merchant name pattern in the body
-    # The sample shows: ご利用店舗：PAYPAY*KARATTO
-    # Japanese: ご利用店舗：PAYPAY*KARATTO
+    # The sample shows: ご利用店舗：PAYPAY*DUMMY
+    # Japanese: ご利用店舗：PAYPAY*DUMMY
     # Ensure proper encoding before matching
     text = body_text.is_a?(String) ? body_text.force_encoding('UTF-8') : body_text.to_s.force_encoding('UTF-8')
-    
+
     # Look for the "ご利用店舗" line format from the sample
     store_match = text.match(/ご利用店舗[：:]([^\r\n]+)/)
     if store_match
@@ -179,21 +179,21 @@ class EmailFetcher
       # Clean up the merchant name - remove any extra characters
       return merchant_name.strip
     end
-    
+
     # Additional fallback for other potential formats
     # The sample might also contain "加盟店名：..." pattern
     line_match = text.match(/加盟店名[：:]([^\r\n]+)/)
     if line_match
       return line_match[1].strip
     end
-    
+
     # Try the previous pattern as another fallback
     merchant_match = text.match(/PAYPAY\*?\(?([^\)]+)\)?\s*円?/)
     if merchant_match
       merchant_name = merchant_match[1]
       return merchant_name.strip
     end
-    
+
     nil
   end
 

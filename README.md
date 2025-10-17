@@ -44,9 +44,23 @@ ruby app.rb
 
 - `lib/email_fetcher.rb`: メール取得のロジック
 - `lib/zaim_api_client.rb`: Zaim APIとの通信ロジック
+- `lib/anapay_to_zaim.rb`: ANA PayメールをZaimに登録するロジック
 - `auth/token_acquirer.rb`: Zaim OAuthトークン取得スクリプト
 - `auth/genre_retriever.rb`: Zaimジャンル情報取得スクリプト
 - `app.rb`: メインアプリケーション
 - `.env`: 環境変数（git管理外）
 - `zaim_tokens.json`: Zaimアクセストークン（git管理外）
 - `zaim_genres.json`: Zaimジャンル情報（git管理外）
+
+## テスト
+
+テストスイートはRSpecを使用しています：
+
+```bash
+bundle exec rspec
+```
+
+テストは以下のコンポーネントをカバーしています：
+- ANA Payメールの取得と解析
+- Zaim APIとの通信
+- メールデータのZaimへの登録

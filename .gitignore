@@ -1,4 +1,3 @@
 samples/
 .env
-zaim_tokens.json
-zaim_genres.json
+zaim_*.json

@@ -34,6 +34,20 @@ This will:
 2. Make an authenticated API call to retrieve genres
 3. Save the genres to `zaim_genres.json`
 
+### 3. Account Retrieval Script
+
+`account_retriever.rb` - This script retrieves the list of accounts from Zaim and saves them to a local file.
+
+**Usage:**
+```bash
+ruby auth/account_retriever.rb
+```
+
+This will:
+1. Load access tokens from `zaim_tokens.json`
+2. Make an authenticated API call to retrieve accounts
+3. Save the accounts to `zaim_accounts.json`
+
 ## Prerequisites
 
 Before running these scripts, make sure you have:

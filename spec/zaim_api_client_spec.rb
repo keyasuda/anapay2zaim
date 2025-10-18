@@ -10,13 +10,17 @@ RSpec.describe ZaimApiClient do
     allow(File).to receive(:exist?).with('zaim_tokens.json').and_return(true)
     allow(File).to receive(:read).with('zaim_tokens.json').and_return(test_tokens.to_json)
 
-    # Set environment variables for testing
+    # Mock ALL environment variables that might be accessed
     allow(ENV).to receive(:[]).with('ZAIM_CONSUMER_ID').and_return('test_consumer_id')
     allow(ENV).to receive(:[]).with('ZAIM_CONSUMER_SECRET').and_return('test_consumer_secret')
-    # Also need to allow other environment variables that might be accessed
-    allow(ENV).to receive(:[]).and_call_original # Allow all other ENV access but return nil by default
+    allow(ENV).to receive(:[]).with('ZAIM_DEFAULT_FROM_ACCOUNT_ID').and_return(nil)
+    
+    # For any other environment variable that might be accessed, return nil
+    allow(ENV).to receive(:[]).and_return(nil)
+    # But specifically allow the variables we need
     allow(ENV).to receive(:[]).with('ZAIM_CONSUMER_ID').and_return('test_consumer_id')
     allow(ENV).to receive(:[]).with('ZAIM_CONSUMER_SECRET').and_return('test_consumer_secret')
+    allow(ENV).to receive(:[]).with('ZAIM_DEFAULT_FROM_ACCOUNT_ID').and_return(nil)
   end
 
   subject(:zaim_client) { ZaimApiClient.new }
@@ -50,6 +54,7 @@ RSpec.describe ZaimApiClient do
         category_id: 199,
         place: 'Test Merchant',
         name: 'Test Merchant'
+        # NOTE: from_account_id is not included when it's nil, based on the actual method implementation
         # NOTE: comment is not included when it's nil, based on the actual method implementation
       }
 

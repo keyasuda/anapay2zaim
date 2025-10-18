@@ -47,10 +47,12 @@ ruby app.rb
 - `lib/anapay_to_zaim.rb`: ANA PayメールをZaimに登録するロジック
 - `auth/token_acquirer.rb`: Zaim OAuthトークン取得スクリプト
 - `auth/genre_retriever.rb`: Zaimジャンル情報取得スクリプト
+- `auth/account_retriever.rb`: Zaim口座情報取得スクリプト
 - `app.rb`: メインアプリケーション
 - `.env`: 環境変数（git管理外）
 - `zaim_tokens.json`: Zaimアクセストークン（git管理外）
 - `zaim_genres.json`: Zaimジャンル情報（git管理外）
+- `zaim_accounts.json`: Zaim口座情報（git管理外）
 
 ## テスト
 

@@ -78,7 +78,11 @@ class ZaimApiClient
     
     # Add optional parameters
     request_params[:comment] = params[:comment] if params[:comment]
-    request_params[:from_account_id] = params[:from_account_id] if params[:from_account_id]
+    
+    # Only add from_account_id if it's explicitly provided either in params or via environment
+    if params[:from_account_id] || ENV['ZAIM_DEFAULT_FROM_ACCOUNT_ID']
+      request_params[:from_account_id] = params[:from_account_id] || ENV['ZAIM_DEFAULT_FROM_ACCOUNT_ID']
+    end
 
     response = @access_token_obj.request(:post, url.to_s, request_params)
     

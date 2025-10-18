@@ -8,10 +8,12 @@ RSpec.describe ANAPayToZaim do
     # Set up environment variables to avoid errors during class initialization
     allow(ENV).to receive(:[]).with('IMAP_HOST').and_return('test.host.com')
     allow(ENV).to receive(:[]).with('IMAP_PORT').and_return('993')
+    allow(ENV).to receive(:[]).with('IMAP_SSL').and_return('true')  # Needed for EmailFetcher
     allow(ENV).to receive(:[]).with('EMAIL_ADDRESS').and_return('test@example.com')
     allow(ENV).to receive(:[]).with('EMAIL_PASSWORD').and_return('password')
     allow(ENV).to receive(:[]).with('ZAIM_CONSUMER_ID').and_return('test_consumer_id')
     allow(ENV).to receive(:[]).with('ZAIM_CONSUMER_SECRET').and_return('test_consumer_secret')
+    allow(ENV).to receive(:[]).with('ZAIM_DEFAULT_FROM_ACCOUNT_ID').and_return('20433200')
     
     # Mock file existence for token file
     allow(File).to receive(:exist?).with('zaim_tokens.json').and_return(true)

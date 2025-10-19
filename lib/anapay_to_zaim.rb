@@ -15,7 +15,13 @@ class ANAPayToZaim
   end
 
   def process_emails(since_date: 7.days.ago)
+    # Load previously processed message IDs
+    processed_message_ids = load_processed_message_ids
+    
     emails = @email_fetcher.fetch_ana_pay_emails(since_date: since_date)
+    
+    # Filter out emails that have already been processed
+    new_emails = emails.reject { |email| processed_message_ids.include?(email[:message_id]) }
     
     results = {
       processed: 0,
@@ -24,8 +30,9 @@ class ANAPayToZaim
     }
     
     puts "Found #{emails.length} ANA Pay emails from the last 7 days"
+    puts "#{new_emails.length} of them are new (not yet processed)"
     
-    emails.each do |email|
+    new_emails.each do |email|
       results[:processed] += 1
       
       puts "Processing email: #{email[:subject]}"
@@ -37,6 +44,8 @@ class ANAPayToZaim
       puts
       
       if register_email_to_zaim(email)
+        # Log the message ID after successful registration
+        log_processed_message_id(email[:message_id])
         results[:registered] += 1
         puts "Successfully registered to Zaim"
       else
@@ -58,6 +67,21 @@ class ANAPayToZaim
       YAML.load_file(mapping_file) || {}
     else
       {}
+    end
+  end
+
+  def load_processed_message_ids
+    log_file = 'processed_emails.log'
+    if File.exist?(log_file)
+      File.readlines(log_file).map(&:chomp).reject(&:empty?)
+    else
+      []
+    end
+  end
+
+  def log_processed_message_id(message_id)
+    File.open('processed_emails.log', 'a') do |file|
+      file.puts(message_id)
     end
   end
 

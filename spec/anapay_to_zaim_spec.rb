@@ -19,6 +19,10 @@ RSpec.describe ANAPayToZaim do
     allow(File).to receive(:exist?).with('merchant_mapping.yml').and_return(true)
     allow(YAML).to receive(:load_file).with('merchant_mapping.yml').and_return({})
 
+    # Mock file existence for processed emails log
+    allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+    allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+
     # Mock file existence for token file
     allow(File).to receive(:exist?).with('zaim_tokens.json').and_return(true)
     allow(File).to receive(:read).with('zaim_tokens.json').and_return('{"access_token": "test", "access_token_secret": "test"}')
@@ -48,6 +52,13 @@ RSpec.describe ANAPayToZaim do
       since_date = Date.today - 7
       # Mock email fetching
       allow(email_fetcher).to receive(:fetch_ana_pay_emails).with(since_date: since_date).and_return(sample_email)
+
+      # Mock the file operations for processed email tracking
+      allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+      allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+      file_double = double('file')
+      allow(file_double).to receive(:puts)
+      allow(File).to receive(:open).with('processed_emails.log', 'a').and_yield(file_double)
 
       # Mock Zaim API call
       zaim_response = {
@@ -92,6 +103,11 @@ RSpec.describe ANAPayToZaim do
 
       since_date = Date.today - 7
       allow(email_fetcher).to receive(:fetch_ana_pay_emails).with(since_date: since_date).and_return(incomplete_email)
+
+      # Mock the file operations for processed email tracking
+      allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+      allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+      # Note: We don't expect file to be opened since the registration will fail
 
       # Should not attempt to call Zaim API for incomplete email
       expect(zaim_client).not_to receive(:create_payment)
@@ -143,6 +159,13 @@ RSpec.describe ANAPayToZaim do
       allow(File).to receive(:exist?).with('merchant_mapping.yml').and_return(true)
       allow(YAML).to receive(:load_file).with('merchant_mapping.yml').and_return(merchant_mapping)
 
+      # Mock the file operations for processed email tracking
+      allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+      allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+      file_double = double('file')
+      allow(file_double).to receive(:puts)
+      allow(File).to receive(:open).with('processed_emails.log', 'a').and_yield(file_double)
+
       # Mock Zaim API call
       zaim_response = {
         "money"=>{"id"=>9304094510, "modified"=>"2025-10-18 00:33:02"},
@@ -169,6 +192,12 @@ RSpec.describe ANAPayToZaim do
       allow(ZaimApiClient).to receive(:new).and_return(zaim_client)
       allow(test_instance).to receive(:instance_variable_get).with(:@email_fetcher).and_return(email_fetcher)
       allow(test_instance).to receive(:instance_variable_get).with(:@zaim_client).and_return(zaim_client)
+      # Mock the file operations for processed email tracking
+      allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+      allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+      file_double = double('file')
+      allow(file_double).to receive(:puts)
+      allow(File).to receive(:open).with('processed_emails.log', 'a').and_yield(file_double)
 
       results = test_instance.process_emails(since_date: since_date)
 
@@ -198,6 +227,13 @@ RSpec.describe ANAPayToZaim do
       allow(File).to receive(:exist?).with('merchant_mapping.yml').and_return(true)
       allow(YAML).to receive(:load_file).with('merchant_mapping.yml').and_return({})
 
+      # Mock the file operations for processed email tracking
+      allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+      allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+      file_double = double('file')
+      allow(file_double).to receive(:puts)
+      allow(File).to receive(:open).with('processed_emails.log', 'a').and_yield(file_double)
+
       # Mock Zaim API call
       zaim_response = {
         "money"=>{"id"=>9304094510, "modified"=>"2025-10-18 00:33:02"},
@@ -224,6 +260,12 @@ RSpec.describe ANAPayToZaim do
       allow(ZaimApiClient).to receive(:new).and_return(zaim_client)
       allow(test_instance).to receive(:instance_variable_get).with(:@email_fetcher).and_return(email_fetcher)
       allow(test_instance).to receive(:instance_variable_get).with(:@zaim_client).and_return(zaim_client)
+      # Mock the file operations for processed email tracking
+      allow(File).to receive(:exist?).with('processed_emails.log').and_return(true)
+      allow(File).to receive(:readlines).with('processed_emails.log').and_return([])
+      file_double = double('file')
+      allow(file_double).to receive(:puts)
+      allow(File).to receive(:open).with('processed_emails.log', 'a').and_yield(file_double)
 
       results = test_instance.process_emails(since_date: since_date)
 

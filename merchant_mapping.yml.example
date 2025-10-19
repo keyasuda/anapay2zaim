@@ -1,0 +1,9 @@
+---
+# YAML configuration for merchant mappings
+# Maps original merchant names to custom merchant names, categories, and genres
+# Format: original_name: {merchant: new_name, category_id: id, genre_id: id}
+
+"ANA DOMESTIC":
+  merchant: "ANAインターネットチケットレスサービス"
+  category_id: 103
+  genre_id: 10304

@@ -3,3 +3,4 @@ samples/
 zaim_*.json
 .rspec_status
 merchant_mapping.yml
+processed_emails.log

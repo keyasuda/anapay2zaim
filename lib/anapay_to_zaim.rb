@@ -1,6 +1,7 @@
 require_relative 'email_fetcher'
 require_relative 'zaim_api_client'
 require 'date'
+require 'yaml'
 
 class ANAPayToZaim
   # Using Genre ID: 19905, Name: 未分類, Category ID: 199 as specified
@@ -10,6 +11,7 @@ class ANAPayToZaim
   def initialize
     @email_fetcher = EmailFetcher.new
     @zaim_client = ZaimApiClient.new
+    @merchant_mapping = load_merchant_mapping
   end
 
   def process_emails(since_date: 7.days.ago)
@@ -50,6 +52,15 @@ class ANAPayToZaim
 
   private
 
+  def load_merchant_mapping
+    mapping_file = 'merchant_mapping.yml'
+    if File.exist?(mapping_file)
+      YAML.load_file(mapping_file) || {}
+    else
+      {}
+    end
+  end
+
   def register_email_to_zaim(email)
     return false unless email[:body][:amount] && email[:body][:merchant]
 
@@ -57,12 +68,20 @@ class ANAPayToZaim
       # Format the transaction date for Zaim API
       zaim_date = determine_date(email)
       
+      # Get merchant mapping if exists
+      mapping = @merchant_mapping[email[:body][:merchant]]
+      
+      # Set parameters, using mapping if available
+      genre_id = mapping ? mapping['genre_id'] : DEFAULT_GENRE_ID
+      category_id = mapping ? mapping['category_id'] : DEFAULT_CATEGORY_ID
+      merchant_name = mapping ? mapping['merchant'] : email[:body][:merchant]
+      
       payment_params = {
         amount: email[:body][:amount],
         date: zaim_date,
-        genre_id: DEFAULT_GENRE_ID,  # 未分類
-        category_id: DEFAULT_CATEGORY_ID, # 共通
-        merchant: email[:body][:merchant],
+        genre_id: genre_id,
+        category_id: category_id,
+        merchant: merchant_name,
         comment: "ANA Pay transaction: #{email[:body][:merchant]}"
       }
       

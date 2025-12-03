@@ -70,6 +70,25 @@ class ANAPayToZaim
     end
   end
 
+  def find_merchant_mapping(merchant_name)
+    # First, try exact match
+    mapping = @merchant_mapping[merchant_name]
+    return mapping if mapping
+
+    # If exact match fails, try prefix matching (partial match)
+    # Sort keys by length (descending) to match longer prefixes first
+    sorted_keys = @merchant_mapping.keys.sort_by { |key| -key.length }
+
+    sorted_keys.each do |key|
+      if merchant_name.start_with?(key)
+        return @merchant_mapping[key]
+      end
+    end
+
+    # No match found
+    nil
+  end
+
   def load_processed_message_ids
     log_file = 'processed_emails.log'
     if File.exist?(log_file)
@@ -91,15 +110,15 @@ class ANAPayToZaim
     begin
       # Format the transaction date for Zaim API
       zaim_date = determine_date(email)
-      
-      # Get merchant mapping if exists
-      mapping = @merchant_mapping[email[:body][:merchant]]
-      
+
+      # Get merchant mapping if exists (first exact match, then partial match)
+      mapping = find_merchant_mapping(email[:body][:merchant])
+
       # Set parameters, using mapping if available
       genre_id = mapping ? mapping['genre_id'] : DEFAULT_GENRE_ID
       category_id = mapping ? mapping['category_id'] : DEFAULT_CATEGORY_ID
       merchant_name = mapping ? mapping['merchant'] : email[:body][:merchant]
-      
+
       payment_params = {
         amount: email[:body][:amount],
         date: zaim_date,
@@ -108,7 +127,7 @@ class ANAPayToZaim
         merchant: merchant_name,
         comment: "ANA Pay transaction: #{email[:body][:merchant]}"
       }
-      
+
       result = @zaim_client.create_payment(payment_params)
       puts "Zaim API response: #{result}"
       true
